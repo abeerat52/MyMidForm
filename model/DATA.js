@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+/*const { Schema, model } = require("mongoose");
 const mongoose= require('mongoose');
 const users= mongoose.Schema({
         email :{type:String , require:true ,unique: true},
@@ -41,9 +41,5 @@ const Abeer= mongoose.Schema({
 });
 
 
-const user= mongoose.model('user',users)
-const drugs= mongoose.model('drug',drug)
-const posts= mongoose.model('post',post)
-module.exports=drugs ;
-module.exports=user ;
-module.exports=posts ;
+
+*/

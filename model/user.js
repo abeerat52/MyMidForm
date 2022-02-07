@@ -15,6 +15,8 @@ const userSchema = new mongoose.Schema({
         type  : Boolean , 
         default : false,
     }, 
+    dateOfBirth:Date,
+    role: String,
     password:String,
     comment : [{
         type : mongoose.Types.ObjectId , 

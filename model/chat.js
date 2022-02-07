@@ -2,6 +2,7 @@ const { Schema, model } = require("mongoose");
 const mongoose= require('mongoose');
 
 const messageSchema = new mongoose.Schema({
+    MId:Number,
     sender_id: {
         type: mongoose.Types.ObjectId,
         ref: "User"

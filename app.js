@@ -2,11 +2,15 @@ const express = require('express');
 const { handle } = require('express/lib/application');
 const app = express()
 const db= require('./db');
-const users =require('./model/DATA');
 const admin =require('./model/admin');
 const user =require('./model/user');
 const post =require('./model/post');
 const chat =require('./model/chat');
+const drug =require('./model/drugs');
+const likes=require('./model/like-dislike');
+const comment=require('./model/comment');
+const rate=require('./model/rate');
+const SpecialistLicense=require('./model/SpecialistLicense');
 app.use(express.json());
 
 
