@@ -1,10 +1,9 @@
 {
   "name": "tw-ac",
   "version": "1.0.0",
-  "description": "",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon app.js "
+    "start": "nodemon app.js"
   },
   "author": "",
   "license": "ISC",
@@ -12,6 +11,16 @@
     "express": "^4.17.2",
     "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.1.2"
-  }
+    "mongoose": "^6.1.2",
+    "nodemon": "^2.0.15"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abeerat52/MyMidForm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/abeerat52/MyMidForm/issues"
+  },
+  "homepage": "https://github.com/abeerat52/MyMidForm#readme",
+  "description": ""
 }

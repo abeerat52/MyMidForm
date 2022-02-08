@@ -1,6 +1,6 @@
 const express = require('express');
-const { handle } = require('express/lib/application');
 const app = express()
+const { handle } = require('express/lib/application');
 const db= require('./db');
 const admin =require('./model/admin');
 const user =require('./model/user');
