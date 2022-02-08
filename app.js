@@ -10,8 +10,13 @@ const drug =require('./model/drugs');
 const likes=require('./model/like-dislike');
 const comment=require('./model/comment');
 const rate=require('./model/rate');
+const Conversation=require('./model/conversation');
+
 const SpecialistLicense=require('./model/SpecialistLicense');
 app.use(express.json());
+
+//const posts = require("./routes/posts")
+//const conversation = require("./routes/conversation")
 
 
 
