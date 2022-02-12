@@ -1,8 +1,6 @@
 const { Schema, model } = require("mongoose");
 const mongoose= require('mongoose');
 //const passwordComplexity = require("joi-password-complexity")
-
-
 const userSchema = new mongoose.Schema({
     firstName: String,
     lastName:String,

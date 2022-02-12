@@ -1,8 +1,9 @@
 const { Schema, model } = require("mongoose");
 const mongoose= require('mongoose');
+const Joi = require("joi")
 
 const comment = new mongoose.Schema({
-    Id:Number,
+    ID:Number,
    Drug_id:Number,
    comment_id: {
         type: mongoose.Types.ObjectId,
@@ -21,7 +22,6 @@ const comment = new mongoose.Schema({
 const commentJoi = (input) => Joi.object({
     comment: Joi.string().min(1).max(200).required(),
 }).validate(input)
-
 
 const comments = mongoose.model("comment", comment)
 module.exports= comment ;

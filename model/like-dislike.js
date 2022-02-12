@@ -2,8 +2,8 @@ const { Schema, model } = require("mongoose");
 const mongoose= require('mongoose');
 
 const like = new mongoose.Schema({
-    Id:Number,
-   likeOrDisLike_id:Number,
+    ID:Number,
+   likeOrDisLike:Number,
    comment_id: {
         type: mongoose.Types.ObjectId,
         ref: "comment"
