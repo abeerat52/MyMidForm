@@ -1,18 +1,18 @@
 const { Schema, model } = require("mongoose");
 const mongoose= require('mongoose');
 const Joi = require("joi")
-const { date } = require("joi")
+
 
 const conversationSchema = new mongoose.Schema({
     ID:Number,
     sender_id : {
         type :mongoose.Types.ObjectId,
-        ref : "User"
+        ref : "user"
     },
     message : String ,
     receive_id : {
         type :mongoose.Types.ObjectId,
-        ref : "User"
+        ref : "user"
     },
     Date : {
         type : Date , 

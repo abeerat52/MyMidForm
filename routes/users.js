@@ -1,7 +1,6 @@
 const express = require("express")
 const mongoose= require('mongoose');
-
-//const nodemailer = require("nodemailer")
+const nodemailer = require("nodemailer")
 const router = express.Router()
 const bcrypt = require("bcrypt")
 const { user, signupJoi, loginJoi, profileJoi, resetPassJoi } = require("../model/user")
@@ -223,7 +222,6 @@ router.post("/signup", async (req, res) => {
 
 
 })
-
 //get email verification 
 router.get("/verify_email/:token", async (req, res) => {
     try {
@@ -239,8 +237,6 @@ router.get("/verify_email/:token", async (req, res) => {
         res.status(500).send(error.message)
     }
 })
-
-
 //login 
 router.post("/login", async (req, res) => {
     try {
@@ -331,7 +327,6 @@ router.put("/profile/edit", async (req, res) => {
     res.json(editUser)
 
 })
-
 //get by id
 router.get("/profile/:username", async (req, res) => {
     //check username
@@ -359,69 +354,6 @@ router.get("/profile/:username", async (req, res) => {
         res.status(500).json("The problem in server")
     }
 })
-
-
-//follow
-router.get("/profile/:id/follow", async (req, res) => {
-    try {
-
-
-        //check token 
-        const token = req.header("Authorization")
-        if (!token) return res.status(401).json("token is missing")
-
-        const decryptToken = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        const userId = decryptToken.id
-
-        const user = await User.findById(userId).select("-password")
-        if (!user) return res.status(404).json("user not found")
-        req.userId = userId
-
-        if (req.params.id == req.userId) return res.status(400).json("you cant follow yourself")
-
-        await User.findByIdAndUpdate(req.params.id, { $addToSet: { followers: req.userId } })
-        await User.findByIdAndUpdate(req.userId, { $addToSet: { following: req.params.id } })
-        res.json("follow")
-
-
-    } catch (error) {
-        console.log(error.message)
-        res.status(500).json("The problem in server")
-    }
-})
-
-//unfollow
-router.get("/profile/:id/unfollow", async (req, res) => {
-    try {
-        //check id
-        const id = req.params.id
-        if (!mongoose.Types.ObjectId.isValid(id))
-        return res.status(400).send("The path is not valid")
-
-        //check token 
-        const token = req.header("Authorization")
-        if (!token) return res.status(401).json("token is missing")
-
-        const decryptToken = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        const userId = decryptToken.id
-
-        const user = await User.findById(userId).select("-password")
-        if (!user) return res.status(404).json("user not found")
-        req.userId = userId
-
-        if (req.params.id == req.userId) return res.status(400).json("you cant follow yourself")
-
-        await User.findByIdAndUpdate(req.params.id, { $pull: { followers: req.userId } })
-        await User.findByIdAndUpdate(req.userId, { $pull: { following: req.params.id } })
-        res.json("Unfollow")
-
-
-    } catch (error) {
-        console.log(error.message)
-        res.status(500).json("The problem in server")
-    }
-})
-
 //reset passwod 
 router.post("/forgot-password", async (req, res) => {
     try {

@@ -1,10 +1,9 @@
 const express = require("express")
 const router = express.Router()
 const jwt = require("jsonwebtoken")
-
 const { conversation, conversationJoi } = require("../model/conversation")
 const { User } = require("../model/user")
-
+//viwe Message
 router.get("/profile/:id/directMessage", async (req, res) => {
     try {
         //check token
@@ -28,7 +27,7 @@ router.get("/profile/:id/directMessage", async (req, res) => {
         res.status(500).json("The proplem in server")
     }
 })
-
+// send Message
 router.post("/profile/:id/directMessage", async (req, res) => {
     try {
         //check token
@@ -59,6 +58,4 @@ router.post("/profile/:id/directMessage", async (req, res) => {
         res.status(500).json("The proplem in server")
     }
 })
-
-
 module.exports = router;

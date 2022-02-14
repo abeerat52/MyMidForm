@@ -4,7 +4,7 @@ const mongoose= require('mongoose');
 const rate = new mongoose.Schema({
     Id:Number,
    rate:Number,
-   drug_id: {
+   drug: {
         type: mongoose.Types.ObjectId,
         ref: "drug"
     },

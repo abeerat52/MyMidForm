@@ -5,13 +5,13 @@ const Joi = require("joi")
 const comment = new mongoose.Schema({
     ID:Number,
    Drug_id:Number,
-   comment_id: {
+   comment: {
         type: mongoose.Types.ObjectId,
         ref: "comment"
     },
      owner: {
         type: mongoose.Types.ObjectId,
-        ref: "User"
+        ref: "user"
     },
      Date : {
         type : Date , 

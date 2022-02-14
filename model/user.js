@@ -1,6 +1,6 @@
 const { Schema, model } = require("mongoose");
 const mongoose= require('mongoose');
-//const passwordComplexity = require("joi-password-complexity")
+const passwordComplexity = require("joi-password-complexity")
 const userSchema = new mongoose.Schema({
     firstName: String,
     lastName:String,
@@ -13,28 +13,13 @@ const userSchema = new mongoose.Schema({
         type  : Boolean , 
         default : false,
     }, 
-    dateOfBirth:Date,
     role: String,
     password:String,
     comment : [{
         type : mongoose.Types.ObjectId , 
         ref : "Comment"
     }] , 
-    receive : [{
-        type : mongoose.Types.ObjectId,
-        ref : "Message"
-    }] , 
-    sent : [{
-        type : mongoose.Types.ObjectId,
-        ref : "Message"
-    }],
-    favourite : [{
-        type : mongoose.Types.ObjectId,
-        ref : "Message"
-    }]
 }) 
-
-
 const signupJoi= (input) => Joi.object({
     firstName : Joi.string().regex(/^[a-zA-Z]+$/).alphanum().min(3).max(50).required(),
     lastName : Joi.string().regex(/^[a-zA-Z]+$/).alphanum().min(3).max(50).required(),

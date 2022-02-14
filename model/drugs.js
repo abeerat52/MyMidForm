@@ -3,14 +3,14 @@ const mongoose= require('mongoose');
 const Joi = require("joi")
 
 const drugSchema = new mongoose.Schema({
-    ID:Number,
+    drugId:Number,
     Name: String,
     description: String,
     termOfUse: String,
     image: String,
     comments: [{
         type: mongoose.Types.ObjectId,
-        ref: "Comment"
+        ref: "comment"
     }],
 })
 

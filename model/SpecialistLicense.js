@@ -1,5 +1,3 @@
-
-
 const { Schema, model } = require("mongoose");
 const mongoose= require('mongoose');
 
@@ -9,7 +7,7 @@ const SpecialistLicense = new mongoose.Schema({
     image: String,
     owner: {
         type: mongoose.Types.ObjectId,
-        ref: "User"
+        ref: "user"
     }
 })
 

@@ -1,17 +1,15 @@
-
 const express = require("express")
 const jwt = require("jsonwebtoken")
-
-const { commentJoi } = require("../model/comment")
+const { comment,commentJoi } = require("../model/comment")
 const { drug, drugJoi } = require("../model/drugs")
+const { rate } = require("../model/rate")
 const { User } = require("../model/user")
-const { Comment } = require("../model/comment")
 const router = express.Router()
 
-
-router.get("/drugs/Public", async (req, res) => {
+//viwe drug
+router.get("/drugs", async (req, res) => {
     try {
-        const drugs = await drugs.find({ type: "Public" }).sort("-Date").populate("likes").populate("owner").populate({
+        const drugs = await drugs.find().sort("-Date").populate({
             path: "comments",
             populate: {
                 path: "owner",
@@ -44,7 +42,6 @@ router.get("/:id", async (req, res) => {
             },
         })
         if (!drugs) return res.status(404).json("drugs is not found")
-
         res.json(drugs)
 
     } catch (error) {
@@ -52,7 +49,7 @@ router.get("/:id", async (req, res) => {
         res.status(500).json("The problem in server")
     }
 })
-
+// add drug
 router.post("/", async (req, res) => {
     try {
         const { description, image, type } = req.body
@@ -62,25 +59,25 @@ router.post("/", async (req, res) => {
         if (!token) return res.status(401).json("token is missing")
 
         const decryptToken = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        const userId = decryptToken.id
+        const UserId = decryptToken.id
 
-        const user = await User.findById(userId).select("-password")
-        if (!user) return res.status(404).json("user not found")
-        req.userId = userId
+        const User = await User.findById(UserId).select("-password")
+        if (!User) return res.status(404).json("User not found")
+        req.UserId = UserId
 
         const result = drugJoi.validate(req.body)
         if (result.error) return res.status(404).json(result.error.details[0].message)
 
-        const drug = new drug({
+        const drugs = new drugs({
 
             description,
             image,
-            owner: req.userId,
+            owner: req.UserId,
             type,
         })
 
 
-        await User.findByIdAndUpdate(req.userId, { $push: { drugs: drug._id } })
+        await User.findByIdAndUpdate(req.UserId, { $push: { drugs: drug._id } })
 
 
         await drugs.save()
@@ -91,7 +88,7 @@ router.post("/", async (req, res) => {
         res.status(500).json("The problem in server")
     }
 })
-
+//edit drug 
 router.put("/:id", async (req, res) => {
     try {
         const { title, description, image, type } = req.body
@@ -105,12 +102,12 @@ router.put("/:id", async (req, res) => {
         if (!token) return res.status(401).json("token is missing")
 
         const decryptToken = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        const userId = decryptToken.id
+        const UserId = decryptToken.id
 
 
-        const user = await User.findById(userId).select("-password")
-        if (!user) return res.status(404).json("user not found")
-        req.userId = userId
+        const User = await User.findById(UserId).select("-password")
+        if (!User) return res.status(404).json("User not found")
+        req.UserId = UserId
 
 
         //validate
@@ -124,14 +121,14 @@ router.put("/:id", async (req, res) => {
                 { new: true })
 
         if (!drugs) return res.status(404).json("drugs not found")
-        if (drugs.owner != req.userId) return res.status(403).json("Unauthorized action")
+        if (drugs.owner != req.UserId) return res.status(403).json("Unauthorized action")
         res.json(drugs)
     } catch (error) {
         console.log(error.message)
         res.status(500).json("The problem in server")
     }
 })
-
+// delet drug
 router.delete("/:id", async (req, res) => {
     try {
 
@@ -140,11 +137,11 @@ router.delete("/:id", async (req, res) => {
         if (!token) return res.status(401).json("token is missing")
 
         const decryptToken = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        const userId = decryptToken.id
+        const UserId = decryptToken.id
 
-        const user = await User.findById(userId).select("-password")
-        if (!user) return res.status(404).json("user not found")
-        req.userId = userId
+        const User = await User.findById(UserId).select("-password")
+        if (!User) return res.status(404).json("User not found")
+        req.UserId = UserId
 
 
         //check id
@@ -155,9 +152,9 @@ router.delete("/:id", async (req, res) => {
         await Comment.deleteMany({ drugsId: req.params.id })
         const drugs = await drugs.findByIdAndRemove(req.params.id)
         if (!drugs) return res.status(404).json("drugs not found")
-        if (drugs.owner != req.userId) return res.status(403).json("Unauthorized action")
+        if (drugs.owner != req.UserId) return res.status(403).json("Unauthorized action")
 
-        await User.findByIdAndUpdate(req.userId, { $pull: { drugs: drug._id } })
+        await User.findByIdAndUpdate(req.UserId, { $pull: { drugs: drug._id } })
 
         res.json(drugs)
 
@@ -167,45 +164,13 @@ router.delete("/:id", async (req, res) => {
     }
 })
 
-//Likes
-router.get("/:drugsId/likes", async (req, res) => {
-    try {
-        //check token
-        const token = req.header("Authorization")
-        if (!token) return res.status(401).json("token is missing")
-
-        const decryptToken = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        const userId = decryptToken.id
-
-        const user = await User.findById(userId).select("-password")
-        if (!user) return res.status(404).json("user not found")
-        req.userId = userId
-
-        //check(validate) id
-        const id = req.params.drugsId
-        if (!mongoose.Types.ObjectId.isValid(id))
-            return res.status(400).send("The path is not valid object id")
 
 
-        let drugs = await drugs.findById(req.params.drugsId)
-        if (!drugs) return res.status(404).json("drugs not found")
+////////////////////////////////////////////////////////////////////////////////////
 
-        const userFound = drugs.likes.find(like => like == req.userId)
-        if (userFound) {
-            await drugs.findByIdAndUpdate(req.params.drugsId, { $pull: { likes: req.userId } })
-            await User.findByIdAndUpdate(req.userId, { $pull: { like: req.params.drugId } })
-            res.json("remove like")
-        } else {
-            await drugs.findByIdAndUpdate(req.params.drugsId, { $push: { likes: req.userId } })
-            await User.findByIdAndUpdate(req.userId, { $push: { like: req.params.drugId } })
-            res.json("liked drugs")
-        }
-    } catch (error) {
-        console.log(error.message)
-        res.status(500).json("The problem in server")
-    }
-})
-//comment
+
+
+//viwe comments
 router.get("/:drugsId/comments", async (req, res) => {
     try {
         //check(validate) id
@@ -224,6 +189,7 @@ router.get("/:drugsId/comments", async (req, res) => {
         res.status(500).json("The problem in server")
     }
 })
+ // add comment
 router.post("/:drugId/comments", async (req, res) => {
     try {
         //check token
@@ -231,12 +197,12 @@ router.post("/:drugId/comments", async (req, res) => {
         if (!token) return res.status(401).json("token is missing")
 
         const decryptToken = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        const userId = decryptToken.id
-        req.userId = userId
+        const UserId = decryptToken.id
+        req.UserId = UserId
 
 
-        const user = await User.findById(userId).select("-password")
-        if (!user) return res.status(404).json("user not found")
+        const User = await User.findById(UserId).select("-password")
+        if (!User) return res.status(404).json("User not found")
 
 
         //check id
@@ -255,10 +221,10 @@ router.post("/:drugId/comments", async (req, res) => {
         const { comment } = req.body
 
         //create comment 
-        const newComment = new Comment({ comment, owner: req.userId, druger: req.params.drugId })
+        const newComment = new Comment({ comment, owner: req.UserId, druger: req.params.drugId })
         await drug.findByIdAndUpdate(req.params.drugId, { $push: { comments: newComment._id } })
 
-        await User.findByIdAndUpdate(req.userId, { $push: { comments: newComment._id } })
+        await User.findByIdAndUpdate(req.UserId, { $push: { comments: newComment._id } })
 
 
 
@@ -270,52 +236,7 @@ router.post("/:drugId/comments", async (req, res) => {
         res.status(500).json("The problem in server")
     }
 })
-router.put("/:drugId/comments/commentId", async (req, res) => {
-    try {
-        //check token
-        const token = req.header("Authorization")
-        if (!token) return res.status(401).json("token is missing")
-
-        const decryptToken = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        const userId = decryptToken.id
-
-        const user = await User.findById(userId).select("-password")
-        if (!user) return res.status(404).json("user not found")
-
-        let drug = await drug.findById(req.params._id)
-        if (drug) return res.status(404).json("drug not found")
-
-        //check(validate) id
-        const drugId = req.params.drugId
-        if (!mongoose.Types.ObjectId.isValid(drugId))
-            return res.status(400).send("The path is not valid object id")
-
-        //check(validate) id
-        const commentId = req.params.commentId
-        if (!mongoose.Types.ObjectId.isValid(commentId))
-            return res.status(400).send("The path is not valid object id")
-
-        //validate
-        const result = commentJoi.validate(req.body)
-        if (result.error) return res.status(404).json(result.error.details[0].message)
-
-
-
-        const { comment } = req.body
-        const commentFound = await Comment.findById(req.params._id)
-        if (!commentFound) return res.status(404).json("comment not found")
-        if (commentFound.owner != req.userId) return res.status(403).json("Unauthorized action")
-
-        const updateComment = await Comment.findByIdAndUpdate(req.params.commentId, { $set: { comment } }, { new: true })
-        await updateComment.save()
-        res.json(updateComment)
-
-
-    } catch (error) {
-        console.log(error.message)
-        res.status(500).json("The problem in server")
-    }
-})
+//delet comment 
 router.delete("/:drugId/comments/:commentId", async (req, res) => {
     try {
         //check token
@@ -323,11 +244,11 @@ router.delete("/:drugId/comments/:commentId", async (req, res) => {
         if (!token) return res.status(401).json("token is missing")
 
         const decryptToken = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        const userId = decryptToken.id
-        req.userId = userId
+        const UserId = decryptToken.id
+        req.UserId = UserId
 
-        const user = await User.findById(userId).select("-password")
-        if (!user) return res.status(404).json("user not found")
+        const User = await User.findById(UserId).select("-password")
+        if (!User) return res.status(404).json("User not found")
 
         //check id
         const drugId = req.params.drugId
@@ -349,10 +270,86 @@ router.delete("/:drugId/comments/:commentId", async (req, res) => {
         if (!commentFound) return res.status(404).json("comment not found")
 
 
-        if (commentFound.owner != req.userId) return res.status(403).json("unauthorized action")
+        if (commentFound.owner != req.UserId) return res.status(403).json("unauthorized action")
         await drug.findByIdAndUpdate(req.params.drugId, { $pull: { comments: commentFound._id } })
         await Comment.findByIdAndRemove(req.params.commentId)
         res.json("comment deleted")
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json("The problem in server")
+    }
+})
+//Likes
+router.get("/:commentId/dislikes", async (req, res) => {
+    try {
+        //check token
+        const token = req.header("Authorization")
+        if (!token) return res.status(401).json("token is missing")
+
+        const decryptToken = jwt.verify(token, process.env.JWT_SECRET_KEY)
+        const userId = decryptToken.id
+
+        const user = await User.findById(userId).select("-password")
+        if (!user) return res.status(404).json("user not found")
+        req.userId = userId
+
+        //check(validate) id
+        const id = req.params.commentId
+        if (!mongoose.Types.ObjectId.isValid(id))
+            return res.status(400).send("The path is not valid object id")
+
+
+        let comment = await comment.findById(req.params.commentId)
+        if (!comment) return res.status(404).json("comment not found")
+
+        const userFound = comment.dislikes.find(dislike => dislike == req.userId)
+        if (userFound) {
+            await comment.findByIdAndUpdate(req.params.commentId, { $pull: { dislikes: req.userId } })
+            await User.findByIdAndUpdate(req.userId, { $pull: { dislike: req.params.commentId } })
+            res.json("remove dislike")
+        } else {
+            await comment.findByIdAndUpdate(req.params.commentId, { $push: { dislikes: req.userId } })
+            await User.findByIdAndUpdate(req.userId, { $push: { dislike: req.params.commentId } })
+            res.json("disliked comment")
+        }
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json("The problem in server")
+    }
+})
+
+router.get("/:commentId/dislikes", async (req, res) => {
+    try {
+        //check token
+        const token = req.header("Authorization")
+        if (!token) return res.status(401).json("token is missing")
+
+        const decryptToken = jwt.verify(token, process.env.JWT_SECRET_KEY)
+        const userId = decryptToken.id
+
+        const user = await User.findById(userId).select("-password")
+        if (!user) return res.status(404).json("user not found")
+        req.userId = userId
+
+        //check(validate) id
+        const id = req.params.commentId
+        if (!mongoose.Types.ObjectId.isValid(id))
+            return res.status(400).send("The path is not valid object id")
+
+
+        let comment = await comment.findById(req.params.commentId)
+        if (!comment) return res.status(404).json("comment not found")
+
+        const userFound = comment.disliks.find(dislik => dislik == req.userId)
+        if (userFound) {
+            await comment.findByIdAndUpdate(req.params.commentId, { $pull: { disliks: req.userId } })
+            await User.findByIdAndUpdate(req.userId, { $pull: { dislik: req.params.commentId } })
+            res.json("remove dislik")
+        } else {
+            await comment.findByIdAndUpdate(req.params.commentId, { $push: { disliks: req.userId } })
+            await User.findByIdAndUpdate(req.userId, { $push: { dislik: req.params.commentId } })
+            res.json("dislikd comment")
+        }
     } catch (error) {
         console.log(error.message)
         res.status(500).json("The problem in server")
