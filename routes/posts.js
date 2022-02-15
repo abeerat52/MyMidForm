@@ -13,7 +13,6 @@ router.get("/posts", async (req, res) => {
 
 
         const posts = await Post.find().sort("-Date").populate("owner").populate({
-      
             populate: {
                 path: "owner",
             },
@@ -56,6 +55,7 @@ router.post("/", async (req, res) => {
         //check token
         const token = req.header("Authorization")
         if (!token) return res.status(401).json("token is missing")
+        
 
         const decryptToken = jwt.verify(token, process.env.JWT_SECRET_KEY)
         const userId = decryptToken.id

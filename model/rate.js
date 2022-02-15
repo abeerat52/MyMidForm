@@ -2,7 +2,7 @@ const { Schema, model } = require("mongoose");
 const mongoose= require('mongoose');
 
 const rate = new mongoose.Schema({
-    Id:Number,
+   
    rate:Number,
    drug: {
         type: mongoose.Types.ObjectId,

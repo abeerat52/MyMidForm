@@ -1,8 +1,8 @@
 const express = require('express');
 const app = express()
 const mongoose = require('mongoose');
-var cors = require('cors');
-const { handle } = require('express/lib/application');
+// var cors = require('cors');
+
 
 //import the routes
 const posts = require("./routes/posts")
@@ -14,12 +14,12 @@ const conversation = require("./routes/conversation")
 //connecting the DB
 mongoose.connect('mongodb://localhost:27017/MyMediForm')
 .then(() => console.log("connection"))
-.catch(error => console.log("fail connection" + error))
+.catch(err => console.log("fail connection" + err))
 
 
 
 app.use(express.json());
-app.use(cors())
+// app.use(cors())
 app.use("/api/auth", users)
 app.use("/api/posts", posts)
 app.use("/api/conversation", conversation)
@@ -27,7 +27,7 @@ app.use("/api/drug", drugs)
 
 
 //server
-const port = 7000
+const port = 5000
 app.listen(port, () => {
   console.log(`listening at http://localhost:${port}`)
 })
