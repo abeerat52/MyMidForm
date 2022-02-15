@@ -2,7 +2,7 @@ const express = require("express")
 const jwt = require("jsonwebtoken")
 const { comment,commentJoi } = require("../model/comment")
 const { drug, drugJoi } = require("../model/drugs")
-const { rate } = require("../model/rate")
+//const { rate } = require("../model/rate")
 const { User } = require("../model/user")
 const router = express.Router()
 

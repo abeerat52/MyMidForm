@@ -27,7 +27,7 @@ app.use("/api/drug", drugs)
 
 
 //server
-const port = 5000
+const port = 7000
 app.listen(port, () => {
   console.log(`listening at http://localhost:${port}`)
 })

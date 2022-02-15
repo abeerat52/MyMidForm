@@ -1,6 +1,9 @@
-const { Schema, model } = require("mongoose");
 const mongoose= require('mongoose');
-const passwordComplexity = require("joi-password-complexity")
+const { number } = require("joi");
+const { Schema, model } = require("mongoose");
+const passwordComplexity = require("joi-password-complexity");
+
+
 const userSchema = new mongoose.Schema({
     firstName: String,
     lastName:String,
@@ -19,7 +22,25 @@ const userSchema = new mongoose.Schema({
         type : mongoose.Types.ObjectId , 
         ref : "Comment"
     }] , 
+    receive : [{
+        type : mongoose.Types.ObjectId,
+        ref : "Message"
+    }] , 
+    sent : [{
+        type : mongoose.Types.ObjectId,
+        ref : "Message"
+    }],
+  
+    like : [{
+        type : mongoose.Types.ObjectId,
+        ref : "comment" ,
+    }],
+    posts : [{
+        type : mongoose.Types.ObjectId,
+        ref : "Post" ,
+    }],
 }) 
+
 const signupJoi= (input) => Joi.object({
     firstName : Joi.string().regex(/^[a-zA-Z]+$/).alphanum().min(3).max(50).required(),
     lastName : Joi.string().regex(/^[a-zA-Z]+$/).alphanum().min(3).max(50).required(),
