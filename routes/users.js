@@ -697,10 +697,10 @@ router.post("/login", async (req, res) => {
 
         const valid = await bcrypt.compare(password, user.password)
         if (!valid) return res.status(400).json("password is wrong")
-
-        if (!user.emailVerified) return res.status(403).send("user not verified , please check your email")
+console.log("12");
+        // if (!user.emailVerified) return res.status(403).send("user not verified , please check your email")
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: "10d" })
-
+        console.log("1y62");
         res.send(token)
 
     } catch (error) {
