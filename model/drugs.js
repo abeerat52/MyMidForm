@@ -3,7 +3,6 @@ const mongoose= require('mongoose');
 const Joi = require("joi")
 
 const drugSchema = new mongoose.Schema({
-    drugId:Number,
     Name: String,
     description: String,
     termOfUse: String,
@@ -12,15 +11,19 @@ const drugSchema = new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: "comment"
     }],
+    rate:[{
+        type: mongoose.Types.ObjectId,
+        ref:"rate" 
+    }],
 })
 
 const drugJoi = Joi.object({
-    title: Joi.string().max(80),
+    Name: Joi.string().max(80),
     description: Joi.string().max(1000).required(),
     image: Joi.string().uri().allow("")
 })
 const editJoi = Joi.object({
-    title: Joi.string().max(80),
+    Name: Joi.string().max(80),
     description: Joi.string().max(1000),
     image: Joi.string().uri().allow("")
 })

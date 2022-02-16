@@ -2,7 +2,6 @@ const { Schema, model } = require("mongoose");
 const mongoose= require('mongoose');
 
 const SpecialistLicense = new mongoose.Schema({
-  LicenseId: Number,
     description: String,
     image: String,
     owner: {

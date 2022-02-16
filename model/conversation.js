@@ -4,7 +4,6 @@ const Joi = require("joi")
 
 
 const conversationSchema = new mongoose.Schema({
-    ID:Number,
     sender_id : {
         type :mongoose.Types.ObjectId,
         ref : "user"
@@ -27,6 +26,5 @@ const conversationJoi = Joi.object({
 })
 
 const Conversation = mongoose.model("Conversation" , conversationSchema)
-
 module.exports.Conversation = Conversation
 module.exports.conversationJoi = conversationJoi

@@ -2,12 +2,17 @@ const mongoose= require('mongoose');
 const Joi = require("joi")
 const passwordComplexity = require("joi-password-complexity");
 
+const role = Object.freeze({
+    Admin: 'Admin',
+    Consumer: 'Consumer',
+    Specialist: 'Specialist',
+    Company:'Company',
+    DRA:'Company',
+  });
 
 const userSchema = new mongoose.Schema({
     firstName: String,
     lastName:String,
-    company_No : String,
-    companyName : String,
     avatar : {
      type :   String,
     },
@@ -17,28 +22,18 @@ const userSchema = new mongoose.Schema({
         type  : Boolean , 
         default : false,
     }, 
-    role: String,
     password:String,
-    comment : [{
-        type : mongoose.Types.ObjectId , 
-        ref : "Comment"
-    }] , 
-    like : [{
-        type : mongoose.Types.ObjectId,
-        ref : "comment" ,
-    }],
-    posts : [{
-        type : mongoose.Types.ObjectId,
-        ref : "Post" ,
-    }],
+    company_No : String,
+    companyName : String,
+
     role : {
         type : String,
-        enum : ["Admin" , "Consumer" , "Specialist" , "Company"],
-        default : "Consumer"
-
+        default : "Consumer",
+        enum : Object.values(role)
+       
     },
-}) 
 
+}) 
 const signupJoi= (input) => Joi.object({
     firstName : Joi.string().regex(/^[a-zA-Z]+$/).alphanum().min(3).max(50).required(),
     lastName : Joi.string().regex(/^[a-zA-Z]+$/).alphanum().min(3).max(50).required(),
@@ -54,7 +49,6 @@ const signupJoi= (input) => Joi.object({
         requirementCount: 3,
       })
 }).validate(input)
-
 const CompanyJoi= (input) => Joi.object({
     companyName : Joi.string().min(3).max(50).required(),
     company_No : Joi.string().regex(/^[a-zA-Z]+$/).alphanum().min(3).max(50).required(),
@@ -70,8 +64,6 @@ const CompanyJoi= (input) => Joi.object({
         requirementCount: 3,
       })
 }).validate(input)
-
-
 const loginJoi =  (input) => Joi.object({
     username : Joi.string().regex(/^[a-zA-Z0-9._]+$/).min(4).max(25),
     email: Joi.string().email(),

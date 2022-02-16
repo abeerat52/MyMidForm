@@ -1,15 +1,15 @@
 const { Schema, model } = require("mongoose");
 const mongoose= require('mongoose');
-const Joi = require("joi")
+const Joi = require("joi");
+const { User } = require("./user");
 
 const postSchema = new mongoose.Schema({
-    postId:Number,
     title: String,
     description: String,
     image: String,
     owner: {
         type: mongoose.Types.ObjectId,
-        ref: "user"
+     //   ref: User.role["company"],
     },
       Date : {
         type : Date , 

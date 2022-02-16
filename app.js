@@ -3,13 +3,11 @@ const app = express()
 const mongoose = require('mongoose');
 // var cors = require('cors');
 
-
 //import the routes
 const posts = require("./routes/posts")
 const users = require("./routes/users")
 const drugs = require("./routes/drug")
 const conversation = require("./routes/conversation")
-
 
 //connecting the DB
 mongoose.connect('mongodb://localhost:27017/MyMediForm')
@@ -17,13 +15,12 @@ mongoose.connect('mongodb://localhost:27017/MyMediForm')
 .catch(err => console.log("fail connection" + err))
 
 
-
 app.use(express.json());
 // app.use(cors())
-app.use("/api/auth", users)
-app.use("/api/posts", posts)
-app.use("/api/conversation", conversation)
-app.use("/api/drug", drugs)
+app.use("/MyMediForm/auth", users)
+app.use("/MyMediForm/posts", posts)
+app.use("/MyMediForm/conversation", conversation)
+app.use("/MyMediForm/drug", drugs)
 
 
 //server

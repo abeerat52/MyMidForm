@@ -2,7 +2,7 @@ const express = require("express")
 const jwt = require("jsonwebtoken")
 const { comment,commentJoi } = require("../model/comment")
 const { drug, drugJoi } = require("../model/drugs")
-//const { rate } = require("../model/rate")
+const { rate } = require("../model/rate")
 const { User } = require("../model/user")
 const router = express.Router()
 
@@ -51,38 +51,28 @@ router.get("/:id", async (req, res) => {
 })
 // add drug
 router.post("/", async (req, res) => {
+
     try {
-        const { description, image, type } = req.body
-
-        //check token
+      const {  Name,description, image } = req.body
+    //   check token
         const token = req.header("Authorization")
-        if (!token) return res.status(401).json("token is missing")
-
-        const decryptToken = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        const UserId = decryptToken.id
-
-        const User = await User.findById(UserId).select("-password")
+       if (!token) return res.status(401).json("token is missing")
+       const decryptToken = jwt.verify(token, process.env.JWT_SECRET_KEY)
+       const UserId = decryptToken.id
+       const User = await User.findById(UserId).select("-password")
         if (!User) return res.status(404).json("User not found")
-        req.UserId = UserId
-
+         req.UserId = UserId
         const result = drugJoi.validate(req.body)
         if (result.error) return res.status(404).json(result.error.details[0].message)
-
+        if(User.role==Admin){
         const drugs = new drugs({
-
+            Name,
             description,
             image,
-            owner: req.UserId,
-            type,
-        })
-
-
+        })}
         await User.findByIdAndUpdate(req.UserId, { $push: { drugs: drug._id } })
-
-
         await drugs.save()
         res.json(drugs)
-
     } catch (error) {
         console.log(error.message)
         res.status(500).json("The problem in server")

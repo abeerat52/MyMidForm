@@ -5,8 +5,6 @@ const { Post, postJoi, editJoi } = require("../model/post")
 const { User } = require("../model/user")
 
 const router = express.Router()
-
-
 //viwe posts
 router.get("/posts", async (req, res) => {
     try {
@@ -23,7 +21,6 @@ router.get("/posts", async (req, res) => {
         res.status(500).json("The problem in server")
     }
 })
-
 router.get("/:id", async (req, res) => {
     try {
         //check id
@@ -50,13 +47,12 @@ router.get("/:id", async (req, res) => {
 //add post
 router.post("/", async (req, res) => {
     try {
-        const { description, image, type } = req.body
+        const { title, description, image } = req.body
 
         //check token
         const token = req.header("Authorization")
         if (!token) return res.status(401).json("token is missing")
-        
-
+    
         const decryptToken = jwt.verify(token, process.env.JWT_SECRET_KEY)
         const userId = decryptToken.id
 
@@ -66,18 +62,16 @@ router.post("/", async (req, res) => {
 
         const result = postJoi.validate(req.body)
         if (result.error) return res.status(404).json(result.error.details[0].message)
-
+        if(User.role==Company){
         const post = new Post({
             title,
             description,
             image,
             owner: req.userId,
-            type,
-        })
-
+        
+        })}
 
         await User.findByIdAndUpdate(req.userId, { $push: { posts: post._id } })
-
 
         await post.save()
         res.json(post)
